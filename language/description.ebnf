@@ -1,0 +1,47 @@
+(*
+    Basic
+*)
+
+reserved_indentifier := "type" | "alias";
+type_identifier := A..Z (a..z A..Z 0..9 _)*;
+var_identifier := a..z (a..z A..Z 0..9 _)* \ reserved_indentifier; (* identifier not in reserved_indentifier *)
+operator := ("+" | "*" | "/" | "-" | "=" | "<" | ">" | "!" | "." | "|" | "^" | "$" | "%" | ":" | "~" | "#" | "&")+;
+reserved_operator := "=";
+user_operator := operator \ reserved_operator; (* operators not in reserved_operator *)
+
+(*
+    Types
+*)
+
+simple_type := 
+    type_identifier (type)*
+;
+
+(*
+    ex: 
+        Bool
+        Maybe (Maybe Int)
+        Either (Int -> Bool) (Float -> Bool)
+        Int -> Maybe Int -> Int
+        F A -> (A -> F B) -> F B
+*)
+
+type :=
+    simple_type ("->" type)?
+|   "(" simple_type "->" type ")" ("->" type)?
+;
+
+alias_type_declaration :=
+    type "=" type ("|" type)*
+|   type "=" type ("&" type)*
+|   type "=" type
+;
+
+type_declaration :=
+    "type" alias_type_declaration
+;
+
+alias_declaration :=
+    "alias" alias_type_declaration
+;
+
