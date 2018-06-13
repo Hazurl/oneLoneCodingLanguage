@@ -15,7 +15,7 @@ lowercase_letters := ? a-z ?;
 letters := uppercase-letters | lowercase-letters;
 digits := ? 0-9 ?;
 
-reserved_indentifier := "type" | "alias" | "lambda";
+reserved_indentifier := "type" | "alias" | "lambda" | "if" | "then" | "else";
 type_identifier := uppercase_letters {letters | digits | "_"};
 var_identifier := lowercase_letters {letters | digits | "_"} \ reserved_indentifier; 
 
@@ -25,7 +25,7 @@ operator_list :=
 |   "~" | "#" | "&" | "\" | "@"
 ;
 operator := operator_list {operator_list};
-reserved_operator := ;
+reserved_operator := '=' | '.' | '->';
 user_operator := operator \ reserved_operator; 
 
 (*
@@ -105,12 +105,14 @@ alias_declaration :=
 *)
 
 value :=
-    literals
+    number_literal
+|   string_literal
+|   lambda_literal
 |   complex_type ["(" [expr {"," expr}]")"]
 ;
 
-literals :=
-    number_literal
+value_not_number :=
+    complex_type ["(" [expr {"," expr}]")"]
 |   string_literal
 |   lambda_literal
 ;
@@ -135,6 +137,28 @@ lambda_literal :=
     Expression
 *)
 
+(*
+    ex:
+        123 + -~456.25
+        Maybe Int(42) >>= lambda (x : Int) -> Maybe Int { return if (x == 0) Nothing else 1/x; }
+        object.thing <> (object.other <> object.last).result
+*)
+
 expr :=
-    value
+    expr_factor [user_operator expr]
+|   "if" "(" expr ")" "then" expr "else" expr
+;
+
+(*
+    ex:
+        -123
+        ~(1 + 1)
+        !!object.member.is_something
+*)
+
+expr_factor :=
+    user_operator expr_factor
+|   value_not_number {"." identifier}
+|   number_literal
+|   "(" expr ")" {"." identifier}
 ;
