@@ -121,7 +121,7 @@ value_not_number :=
     Add hex and binary form
 *)
 literal_number :=
-    digits {digits} ["." {digits}]
+    digits {digits} ["." digits {digits}]
 ;
 
 literal_string :=
