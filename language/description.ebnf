@@ -19,7 +19,11 @@ reserved_indentifier := "type" | "alias" | "lambda";
 type_identifier := uppercase_letters {letters | digits | "_"};
 var_identifier := lowercase_letters {letters | digits | "_"} \ reserved_indentifier; 
 
-operator_list := "+" | "*" | "/" | "-" | "=" | "<" | ">" | "!" | "." | "|" | "^" | "$" | "%" | ":" | "~" | "#" | "&";
+operator_list := 
+    "+" | "*" | "/" | "-" | "=" | "<" | ">" 
+|   "!" | "." | "|" | "^" | "$" | "%" | ":" 
+|   "~" | "#" | "&" | "\" | "@"
+;
 operator := operator_list {operator_list};
 reserved_operator := ;
 user_operator := operator \ reserved_operator; 
@@ -95,6 +99,7 @@ alias_declaration :=
         lambda () { return True; }
         Int (42)
         Maybe Int ( Just (42) )
+        Nothing
         Vec2f (1, -1.2)
         Int -> Int ( lambda (a : Int) -> Int { return a + 1; } )
 *)
