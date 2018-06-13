@@ -28,11 +28,21 @@ user_operator := operator \ reserved_operator;
     Types
 *)
 
+(*
+    simple_type is either a single identifier or multiple one between parenthesis
+    ex:
+        Int
+        (Maybe Int)
+        (A -> B)
+*)
+
 simple_type := 
-    type_identifier {type}
+    type_identifier
+|   '(' complex_type ')'
 ;
 
 (*
+    complex_type doesn't have the restriction to be in parenthesis
     ex: 
         Bool
         Maybe (Maybe Int)
@@ -41,21 +51,21 @@ simple_type :=
         F A -> (A -> F B) -> F B
 *)
 
-type :=
-    simple_type ["->" type]
-|   "(" simple_type "->" type ")" ["->" type]
+complex_type :=
+    type_parametric {simple_type} ["->" type]
+|   "(" type_parametric {simple_type} "->" type ")" ["->" type]
 ;
 
 (*
     ex:
-        type Maybe A = Nothing | Just A
-        type Vec3 T = T & T & T
+        type Maybe A = Nothing | (Just A)
+        type Vec3 T = T T T
         alias Vec3f = Vec3 Float
-        type ComposeFunction A B C = (B -> C) -> (A -> C) -> A -> C
+        type ComposeFunction A B C = ((B -> C) -> (A -> C) -> A -> C)
 *)
 
 alias_type_declaration :=
-    simple_type "=" type ({"|" type} | {"&" type})
+    simple_type "=" simple_type {simple_type} {"|" simple_type {simple_type}}
 ;
 
 type_declaration :=
