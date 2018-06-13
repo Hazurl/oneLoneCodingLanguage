@@ -105,31 +105,31 @@ alias_declaration :=
 *)
 
 value :=
-    number_literal
-|   string_literal
-|   lambda_literal
+    literal_number
+|   literal_string
+|   literal_lambda
 |   complex_type ["(" [expr {"," expr}]")"]
 ;
 
 value_not_number :=
     complex_type ["(" [expr {"," expr}]")"]
-|   string_literal
-|   lambda_literal
+|   literal_string
+|   literal_lambda
 ;
 
 (*
     Add hex and binary form
 *)
-number_literal :=
+literal_number :=
     digits {digits} ["." {digits}]
 ;
 
-string_literal :=
+literal_string :=
     '"' {? all ascii characters except "\" and '"' ? | "\" ? any valid escape character ?} '"'
 |   "'" (? all ascii characters except "\" and "'" ? | "\" ? any valid escape character ?) "'"
 ;
 
-lambda_literal :=
+literal_lambda :=
     "lambda" "(" {variable_declaration} ")" ["->" complex_type] "{" {statement} "}"
 ;
 
@@ -140,6 +140,7 @@ lambda_literal :=
 (*
     ex:
         123 + -~456.25
+        (-32).abs()
         Maybe Int(42) >>= lambda (x : Int) -> Maybe Int { return if (x == 0) Nothing else 1/x; }
         object.thing <> (object.other <> object.last).result
 *)
@@ -158,7 +159,12 @@ expr :=
 
 expr_factor :=
     user_operator expr_factor
-|   value_not_number {"." identifier}
-|   number_literal
-|   "(" expr ")" {"." identifier}
+|   value_not_number [expr_additional]
+|   literal_number
+|   "(" expr ")" [expr_additional]
+;
+
+expr_additional :=
+    "." identifier [expr_additional]
+|   "(" [expr {"," expr}] ")" [expr_additional]
 ;
