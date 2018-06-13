@@ -76,3 +76,60 @@ alias_declaration :=
     "alias" alias_type_declaration
 ;
 
+(*
+    Value
+    This denote parsable unit representating a construction of a value of a type
+*)
+
+(*
+    ex:
+        0
+        12.
+        123.456
+        ""
+        '.'
+        "\"\""
+        "blabla"
+        lambda () {}
+        lambda (x : Int, y : Int) -> Int { return x + y; }
+        lambda () { return True; }
+        Int (42)
+        Maybe Int ( Just (42) )
+        Vec2f (1, -1.2)
+        Int -> Int ( lambda (a : Int) -> Int { return a + 1; } )
+*)
+
+value :=
+    literals
+|   complex_type ["(" [expr {"," expr}]")"]
+;
+
+literals :=
+    number_literal
+|   string_literal
+|   lambda_literal
+;
+
+(*
+    Add hex and binary form
+*)
+number_literal :=
+    digits {digits} ["." {digits}]
+;
+
+string_literal :=
+    '"' {? all ascii characters except "\" and '"' ? | "\" ? any valid escape character ?} '"'
+|   "'" (? all ascii characters except "\" and "'" ? | "\" ? any valid escape character ?) "'"
+;
+
+lambda_literal :=
+    "lambda" "(" {variable_declaration} ")" ["->" complex_type] "{" {statement} "}"
+;
+
+(*
+    Expression
+*)
+
+expr :=
+    value
+;
