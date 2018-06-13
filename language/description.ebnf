@@ -15,7 +15,7 @@ lowercase_letters := ? a-z ?;
 letters := uppercase-letters | lowercase-letters;
 digits := ? 0-9 ?;
 
-reserved_indentifier := "type" | "alias";
+reserved_indentifier := "type" | "alias" | "lambda";
 type_identifier := uppercase_letters {letters | digits | "_"};
 var_identifier := lowercase_letters {letters | digits | "_"} \ reserved_indentifier; 
 
